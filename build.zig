@@ -1,4 +1,5 @@
 const std = @import("std");
+const jok = @import("jok");
 
 // Although this function looks imperative, note that its job is to
 // declaratively construct a build graph that will be executed by an external
@@ -29,12 +30,20 @@ pub fn build(b: *std.Build) void {
     // running `zig build`).
     b.installArtifact(lib);
 
-    const exe = b.addExecutable(.{
-        .name = "gamezig",
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
+    // const exe = b.addExecutable(.{
+    //     .name = "gamezig",
+    //     .root_source_file = b.path("src/main.zig"),
+    //     .target = target,
+    //     .optimize = optimize,
+    // });
+    const exe = jok.createGame(
+        b,
+        "mygame",
+        "src/main.zig",
+        target,
+        optimize,
+        .{},
+    );
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
@@ -89,3 +98,11 @@ pub fn build(b: *std.Build) void {
     test_step.dependOn(&run_lib_unit_tests.step);
     test_step.dependOn(&run_exe_unit_tests.step);
 }
+
+// const install_cmd = b.addInstallArtifact(exe, .{});
+//
+// const run_cmd = b.addRunArtifact(exe);
+// run_cmd.step.dependOn(&install_cmd.step);
+//
+// const run_step = b.step("run", "Run game");
+// run_step.dependOn(&run_cmd.step);
